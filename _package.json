@@ -1,0 +1,25 @@
+{
+  "name": "fwap",
+  "version": "0.0.0",
+  "description": "shows trending events near you based on check ins",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/sanchezjjose/fwap.git"
+  },
+  "keywords": [
+    "trending",
+    "trend",
+    "event",
+    "foursquare"
+  ],
+  "author": "jose sanchez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sanchezjjose/fwap/issues"
+  },
+  "homepage": "https://github.com/sanchezjjose/fwap"
+}
