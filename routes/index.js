@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var https = require('https');
+var fsquare_options = require('../public/javascripts/foursquare-options');
 
 
 /* GET home page. */
@@ -9,24 +10,16 @@ router.get('/', function(req, res) {
 });
 
 router.get('/json', function(req, res) {
-  var options = {
-    host: 'api.foursquare.com',
-    port: 443,
-    path: '/v2/venues/trending?ll=34.0522340,-118.2436850&radius=2000&client_id=***REMOVED***&client_secret=***REMOVED***&v=***REMOVED***'
-  };
-
-  https.get(options, function(resp){
+  var jsonData = 'no data yet';
+  https.get(fsquare_options, function(resp){
     resp.on('data', function(chunk){
-      var data = chunk.toString();
-
-      console.log("YEP");
-      console.log(chunk.toString());
+      jsonData = chunk.toString();
     });
   }).on("error", function(e){
-    console.log("Got error: " + e.message);
+    jsonData = e.message;
   });
 
-  res.json({ message: 'hooray! welcome to our api!' });
+  res.json(jsonData);
 });
 
 module.exports = router;
