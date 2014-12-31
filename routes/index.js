@@ -5,21 +5,17 @@ var fsquareOpts = require('../public/javascripts/foursquare-options');
 
 
 router.get('/', function(req, res) {
-	res.render('index', { title: 'Express' });
-});
-
-router.get('/trending', function(req, res) {
-  https.get(fsquareOpts(), function(checkins) {
+	https.get(fsquareOpts(), function(trending) {
     var body = '';
 
-    checkins.on('data', function(chunk) {
+    trending.on('data', function(chunk) {
       body += chunk.toString();
     });
 
-    checkins.on('end', function() {
+    trending.on('end', function() {
       res.format({
         'text/html': function(){
-          res.render('trending', JSON.parse(body).response);
+          res.render('index', JSON.parse(body).response);
         },
 
         'application/json': function(){

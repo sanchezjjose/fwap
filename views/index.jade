@@ -1,5 +1,12 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  h1= "What's Good!?"
+  h2 Here's are #{venues.length} events trending near you
+  
+  div
+    for venue in venues
+      p #{venue.name}
+      div <b>#{venue.stats.checkinsCount}</b> total checkins
+      div <b>#{venue.hereNow.count}</b> are here now
+      div --------------------
