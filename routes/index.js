@@ -19,12 +19,11 @@ router.get('/trending', function(req, res) {
     checkins.on('end', function() {
       res.format({
         'text/html': function(){
-          res.render('trending', JSON.parse(body));
+          res.render('trending', JSON.parse(body).response);
         },
 
         'application/json': function(){
           res.send(body);
-          res.end();
         },
 
         'default': function() {
