@@ -1,13 +1,13 @@
 extends layout
 
 block content
-  h1#title= "What's Good!"
-  h2 #{venues.length} events trending near you
+  div.container
+    h2 #{venues.length} events trending near you
 
-  div
-    for venue in venues
-      div.venue
-        h3: a(href='#{venue.url}') #{venue.name}
-        ul
-         li: #[span #{venue.stats.checkinsCount}] total checkins
-         li #[span #{venue.hereNow.count}] are here now
+    div
+      for venue in venues
+        div.venue
+          h3: a(href='#{venue.url}') #{venue.name}
+          ul
+           li: #[span #{venue.stats.checkinsCount}] total checkins
+           li #[span #{venue.hereNow.count}] are here now
