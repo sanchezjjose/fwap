@@ -1,5 +1,12 @@
+
+@viewport-wide:   ~"(min-width: 1024px)";
+@viewport-medium: ~"(min-width: 768px) and (max-width: 1023px)";
+@viewport-narrow: ~"(min-width: 480px) and (max-width: 767px)";
+@viewport-tiny:   ~"(max-width: 479px)";
+
 body {
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
+  font-size: 14px;
   margin: 0;
 }
 
@@ -8,26 +15,35 @@ a {
 }
 
 nav {
-  background-color: LightCoral;
+  background-color: #699B99;
   color: white;
-  font: 36px "Proxima Nova", "Lucida Grande", Helvetica, Arial, sans-serif;
-  height: 50px;
-  padding: 40px 50px 0;
+  font-family: "Proxima Nova", "Lucida Grande", Helvetica, Arial, sans-serif;
+  font-size: 40px;
+  padding: 20px;
 
-  .good {
-    text-decoration: underline;
-    text-decoration-style: wavy;
-    text-decoration-color: red;
+  @media @viewport-tiny,
+         @viewport-narrow {
+    font-size: 36px;
+    height: 40px;
+    padding: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
   }
 }
 
-#title {
+#logo {
   margin-bottom: 30px;
   margin-top: 0;
 }
 
 .container {
   padding: 20px;
+
+  @media @viewport-tiny,
+         @viewport-narrow {
+    padding: 10px;
+  }
 }
 
 .venue {
@@ -51,3 +67,4 @@ nav {
     font-weight: bold;
   }
 }
+
