@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  div.container
+    h2 Your guide to what's trending around you.
+
+    div.disclaimer
+      p We ask your permission to receive your current location. 
+        | We promise not to share this information with anyone,
+        | or use this data in any way without your consent.
+        | Please accept the browsers request to give us your GPS
+        | location, in order to find cool and interesting places near you!
+
+      a.geolocation(href='#')
