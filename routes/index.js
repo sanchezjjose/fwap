@@ -1,21 +1,17 @@
 var express = require('express');
 var router = express.Router();
 var https = require('https');
-var fsquareReqOpts = require('../public/javascripts/fsquareRequestOptions.js');
+var qs = require('querystring');
+var fsquareReqOpts = require('../public/javascripts/foursquare-api.js');
 
-
-router.get('/', function(req, res) {
-
-  if ( false ) {
-
-    res.render('index-noresults');
-
-  } else {
-
-    // TODO: get these values from request object, returned by the client
-    var latitude = '40.7463340';
-    var longitude = '-73.9824640';
-    var radius = '2000';
+router.route('/')
+  .get(function(req, res) {
+    res.render('index', JSON.parse("{ \"venues\":[] }"));
+  })
+  .post(function(req, res) {
+    var latitude = req.body.latitude,
+        longitude = req.body.longitude,
+        radius = '2000';
 
     https.get(fsquareReqOpts(latitude, longitude, radius), function(trending) {
       var body = '';
@@ -26,11 +22,11 @@ router.get('/', function(req, res) {
 
       trending.on('end', function() {
         res.format({
-          'text/html': function(){
+          'text/html': function() {
             res.render('index', JSON.parse(body).response);
           },
 
-          'application/json': function(){
+          'application/json': function() {
             res.send(body);
           },
 
@@ -44,15 +40,6 @@ router.get('/', function(req, res) {
     }).on('error', function(e) {
       res.send(e.message);
     });
-  }
-});
-
-router.post('/test', function(req, res) {
-  console.log('test!');
-  console.log(req.params);
-  console.log(res.params);
-
-  res.render('index-noresults');
-});
+  })
 
 module.exports = router;

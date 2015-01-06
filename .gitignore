@@ -1,3 +1,6 @@
+# LESS only
+*.css
+
 # OS X
 .DS_Store*
 Icon?

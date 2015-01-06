@@ -1,8 +1,7 @@
 
-@viewport-wide:   ~"(min-width: 1024px)";
-@viewport-medium: ~"(min-width: 768px) and (max-width: 1023px)";
-@viewport-narrow: ~"(min-width: 480px) and (max-width: 767px)";
-@viewport-tiny:   ~"(max-width: 479px)";
+@viewport-desktop: ~"(min-width: 1024px)";
+@viewport-tablet: ~"(min-width: 768px) and (max-width: 1023px)";
+@viewport-mobile: ~"(max-width: 767px)";
 
 body {
   font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -21,8 +20,7 @@ nav {
   font-size: 40px;
   padding: 20px;
 
-  @media @viewport-tiny,
-         @viewport-narrow {
+  @media @viewport-mobile {
     font-size: 36px;
     height: 40px;
     padding: 20px;
@@ -48,8 +46,7 @@ nav {
 .container {
   padding: 20px;
 
-  @media @viewport-tiny,
-         @viewport-narrow {
+  @media @viewport-mobile {
     padding: 10px;
   }
 
