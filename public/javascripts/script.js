@@ -8,7 +8,7 @@ function getCurrentPosition() {
 	if ("geolocation" in navigator) {
 		var geoOpts = {
 			    enableHighAccuracy: true,
-			    maximumAge        : 60000,
+			    maximumAge        : 1800000, // 30 minutes
 			    timeout           : 20000
 		    };
 
@@ -20,7 +20,7 @@ function getCurrentPosition() {
 	}
 }
 
-// Send coordinates to server to display results, either by AJAX or Form Submission
+// Send coordinates to server
 function geoSuccess(position) {
   var data = { latitude: position.coords.latitude, longitude: position.coords.longitude },
       XHR = new XMLHttpRequest(),
@@ -39,19 +39,19 @@ function geoSuccess(position) {
 
   // We define what will happen if the data is successfully sent
   XHR.addEventListener('load', function(event) {
-  	console.log("response loaded");
+  	
+  	var parser = new DOMParser(),
+        doc = parser.parseFromString(XHR.responseText, "text/html"),
+        responseBody = doc.getElementsByClassName('content')[0];
 
-  	/*
-     * Updates the DOM.
-     *
-     * TODO: Do in vanilla JS
-     * TODO: Do not replace entire DOM, only everything under the Nav
-  	 */
-    $("html").html(XHR.responseText);
+    var newContainer = document.createElement("div");
+    newContainer.setAttribute("class", "container");
+		newContainer.appendChild(responseBody);
 
-    // document.open();
-		// document.write(XHR.responseText);
-		// document.close();
+    var oldContainer = document.getElementsByClassName('container')[0],
+        parentElem = oldContainer.parentNode;
+
+    parentElem.replaceChild(newContainer, oldContainer);
   });
 
   // We define what will happen in case of error
@@ -72,15 +72,33 @@ function geoSuccess(position) {
 function geoError() {
 	// TODO: Handle by displaying a form to enter zip code, with link to retry for geolocation
 	console.log("Error getting current position.");
+
+	// switch(error.code) {
+ //    case error.PERMISSION_DENIED:
+ //      x.innerHTML = "User denied the request for Geolocation."
+ //      break;
+ //    case error.POSITION_UNAVAILABLE:
+ //      x.innerHTML = "Location information is unavailable."
+ //      break;
+ //    case error.TIMEOUT:
+ //      x.innerHTML = "The request to get user location timed out."
+ //      break;
+ //    case error.UNKNOWN_ERROR:
+ //      x.innerHTML = "An unknown error occurred."
+ //      break;
+	// 	}
 }
 
 function showDisclaimer() {
-	document.getElementsByClassName('disclaimer')[0].style.display='block';
+	var disclaimerElem = document.getElementsByClassName('disclaimer')[0];
 
-	var geoLocationLink = document.getElementsByClassName('geolocation')[0];
-	geoLocationLink.innerText = 'Get My Location';
-	geoLocationLink.addEventListener("click", function() {
-		getCurrentPosition();
-	});
+	if (disclaimerElem) {
+		disclaimerElem.style.display='block';
+
+		var geoLocationLink = document.getElementsByClassName('geolocation')[0];
+		geoLocationLink.innerText = 'Get My Location';
+		geoLocationLink.addEventListener("click", function() {
+			getCurrentPosition();
+		});
+	}
 }
-

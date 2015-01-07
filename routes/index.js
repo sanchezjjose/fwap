@@ -6,11 +6,11 @@ var fsquareReqOpts = require('../public/javascripts/foursquare-api.js');
 
 router.route('/')
   .get(function(req, res) {
-    res.render('index', JSON.parse("{ \"venues\":[] }"));
+    res.render('index');
   })
   .post(function(req, res) {
-    var latitude = req.body.latitude,
-        longitude = req.body.longitude,
+    var latitude = 40.7463340, //req.body.latitude,
+        longitude = -73.9824640, //req.body.longitude,
         radius = '2000';
 
     https.get(fsquareReqOpts(latitude, longitude, radius), function(trending) {
