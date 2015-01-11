@@ -5,7 +5,7 @@ block content
     div.content
 
       if !venues
-        h2 Your guide to what's trending near you.
+        h2 Find Trending Events Near You.
 
         div.disclaimer
           p We ask your permission to receive your current location.
@@ -14,18 +14,20 @@ block content
             | Please accept the browsers request to give us your GPS
             | location, in order to find cool and interesting places near you!
 
-          a.geolocation(href='#')
-
-      else if venues.length > 0
-        h2 #{venues.length} events trending near you
-
-        div
-          for venue in venues
-            div.venue
-              h3: a(href='#{venue.url}') #{venue.name}
-              ul
-               li #[span #{venue.stats.checkinsCount}] total checkins
-               li #[span #{venue.hereNow.count}] are here now
+          div.geolocation
+            a(href="#")
 
       else
-        h2 There are no events trending at the moment in your area.
+        if venues.length > 0
+          h2 #{venues.length} events trending near you
+
+          div
+            for venue in venues
+              div.venue
+                h3: a(href='#{venue.url}') #{venue.name}
+                ul
+                 li #[span #{venue.stats.checkinsCount}] total checkins
+                 li #[span #{venue.hereNow.count}] are here now
+
+        else
+          h2 There are no events trending at the moment in your area.
