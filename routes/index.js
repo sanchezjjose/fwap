@@ -9,9 +9,9 @@ router.route('/')
     res.render('index');
   })
   .post(function(req, res) {
-    var latitude = req.body.latitude, //40.7463340,
-        longitude = req.body.longitude, //-73.9824640,
-        radius = '2000';
+    var latitude = req.body.latitude,
+        longitude = req.body.longitude,
+        radius = '5000'; // meters => approximately 3 miles
 
     https.get(fsquareReqOpts(latitude, longitude, radius), function(trending) {
       var body = '';
