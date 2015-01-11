@@ -101,7 +101,7 @@ function showDisclaimer() {
 		disclaimerElem.style.display='block';
 
 		var geoLocationLink = document.querySelector('.geolocation a');
-		geoLocationLink.innerText = 'Get My Location';
+		geoLocationLink.innerText = 'Find My Events';
 		geoLocationLink.addEventListener("click", function(ev) {
 			ev.preventDefault();
 			getCurrentPosition();
