@@ -103,7 +103,7 @@ function showDisclaimer() {
 		var geoLocationLink = document.querySelector('.geolocation a');
 		geoLocationLink.innerText = 'Find My Events';
 		geoLocationLink.addEventListener("click", function(ev) {
-			ev.preventDefault();
+			// ev.preventDefault();
 			getCurrentPosition();
 		});
 	}
