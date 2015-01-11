@@ -1,6 +1,5 @@
 
 window.onload = function() {
-	// getCurrentPosition();
 	showDisclaimer();
 }
 
@@ -22,7 +21,7 @@ function getCurrentPosition() {
 
 // Send coordinates to server.
 function geoSuccess(position) {
-	showLoadingSpinner();
+	showLoadingIndicator(true);
 
   var data = { latitude: position.coords.latitude, longitude: position.coords.longitude },
       XHR = new XMLHttpRequest(),
@@ -42,7 +41,7 @@ function geoSuccess(position) {
   urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+');
 
   XHR.addEventListener('load', function(event) {
-  	hideLoadingSpinner();
+  	hideLoadingIndicator();
 
   	var parser = new DOMParser(),
         doc = parser.parseFromString(XHR.responseText, "text/html"),
@@ -59,7 +58,7 @@ function geoSuccess(position) {
   });
 
   XHR.addEventListener('error', function(event) {
-  	hideLoadingSpinner();
+  	hideLoadingIndicator();
 
   	var content = document.getElementsByClassName("content")[0];
   	content.innerHTML = "Error occurred sending coordinates to server."
@@ -74,8 +73,9 @@ function geoSuccess(position) {
 }
 
 function geoError() {
-	hideLoadingSpinner();
+	hideLoadingIndicator();
 
+	// TODO: When error occurs, show message on the home screen, to allow them to try again.
 	var content = document.getElementsByClassName("content")[0];
 
 	switch(error.code) {
@@ -103,22 +103,33 @@ function showDisclaimer() {
 		var geoLocationLink = document.querySelector('.geolocation a');
 		geoLocationLink.innerText = 'Find My Events';
 		geoLocationLink.addEventListener("click", function(ev) {
-			// ev.preventDefault();
 			getCurrentPosition();
 		});
 	}
 }
 
-function showLoadingSpinner() {
-	document.getElementById("spinner").className =
-   document.getElementById("spinner").className.replace
-      ( /(?:^|\s)hide(?!\S)/g , 'show' )
+// TODO: Avoid this somehow.
+var intervalId = intervalId || undefined;
+
+function showLoadingIndicator(isLoading) {
+  if (!intervalId) {
+  	var buttonElem = document.querySelector(".geolocation a");
+  	buttonElem.innerText = "Loading...";
+
+  	intervalId = window.setInterval(function() {
+	  	if (buttonElem.innerText.length == 10) {
+	  		buttonElem.innerText = "Loading.";
+	  	} else {
+	  		buttonElem.innerText += ".";
+	  	}
+	  }, 1000);
+  } else {
+  	window.clearInterval(intervalId);
+  }
 }
 
-function hideLoadingSpinner() {
-	document.getElementById("spinner").className =
-   document.getElementById("spinner").className.replace
-      ( /(?:^|\s)show(?!\S)/g , 'hide' )
+function hideLoadingIndicator() {
+  showLoadingIndicator(false);
 }
 
 
