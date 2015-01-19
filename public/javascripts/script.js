@@ -23,8 +23,41 @@ function getCurrentPosition() {
 function geoSuccess(position) {
 	showLoadingIndicator(true);
 
-  var data = { latitude: position.coords.latitude, longitude: position.coords.longitude },
-      XHR = new XMLHttpRequest(),
+	var data = { latitude: position.coords.latitude, longitude: position.coords.longitude, timestamp: new Date().getTime() };
+	localStorage.setItem("position", JSON.stringify(data));
+
+	sendAjaxRequest(data);
+}
+
+function geoError() {
+	hideLoadingIndicator();
+	handleError();
+}
+
+function handleError() {
+
+	// TODO: When error occurs, show message on the home screen, to allow them to try again.
+	var content = document.getElementsByClassName("content")[0];
+
+	switch(error.code) {
+   case error.PERMISSION_DENIED:
+     content.innerHTML = "User denied the request for Geolocation."
+     break;
+   case error.POSITION_UNAVAILABLE:
+     content.innerHTML = "Location information is unavailable."
+     break;
+   case error.TIMEOUT:
+     content.innerHTML = "The request to get user location timed out."
+     break;
+   case error.UNKNOWN_ERROR:
+     content.innerHTML = "An unknown error occurred."
+     break;
+	}
+}
+
+function sendAjaxRequest(data) {
+
+	var XHR = new XMLHttpRequest(),
       urlEncodedData = "",
       urlEncodedDataPairs = [],
       name;
@@ -55,6 +88,8 @@ function geoSuccess(position) {
         parentElem = oldContainer.parentNode;
 
     parentElem.replaceChild(newContainer, oldContainer);
+
+    changeRadius();
   });
 
   XHR.addEventListener('error', function(event) {
@@ -72,25 +107,22 @@ function geoSuccess(position) {
   XHR.send(urlEncodedData);
 }
 
-function geoError() {
-	hideLoadingIndicator();
+function changeRadius() {
+	var radiusElems = document.querySelectorAll(".radius");
 
-	// TODO: When error occurs, show message on the home screen, to allow them to try again.
-	var content = document.getElementsByClassName("content")[0];
+	for (var i = 0; i < radiusElems.length; i++) {
 
-	switch(error.code) {
-   case error.PERMISSION_DENIED:
-     content.innerHTML = "User denied the request for Geolocation."
-     break;
-   case error.POSITION_UNAVAILABLE:
-     content.innerHTML = "Location information is unavailable."
-     break;
-   case error.TIMEOUT:
-     content.innerHTML = "The request to get user location timed out."
-     break;
-   case error.UNKNOWN_ERROR:
-     content.innerHTML = "An unknown error occurred."
-     break;
+		// TODO: make this event binding delegated
+		radiusElems[i].addEventListener("click", function(ev) {
+			ev.preventDefault();
+
+			console.log(this.dataset.meters);
+
+			var data = JSON.parse(localStorage.getItem("position"));
+			data.radius = this.dataset.meters;
+
+			sendAjaxRequest(data);
+		});
 	}
 }
 
@@ -108,7 +140,7 @@ function showDisclaimer() {
 	}
 }
 
-// TODO: Avoid this somehow.
+// TODO: Fix this.
 var intervalId = intervalId || undefined;
 
 function showLoadingIndicator(isLoading) {
