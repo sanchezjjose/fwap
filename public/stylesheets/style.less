@@ -97,8 +97,26 @@ nav {
     }
   }
 
-  .radius {
-    margin: 20px;
+  .radius-filters {
+    background-color: white;
+    padding: 20px;
+    text-align: center;
+
+    a {
+      color: #34495E;
+      font-size: 16px;
+      margin: 0 60px;
+      text-decoration: none;
+
+      @media @viewport-mobile {
+        margin: 0 10px;
+      }
+    }
+
+    a.selected {
+      font-size: 17px;
+      font-weight: 900;
+    }
   }
 
   .venue {

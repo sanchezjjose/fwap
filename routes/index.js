@@ -11,7 +11,7 @@ router.route('/')
   .post(function(req, res) {
     var latitude = req.body.latitude,
         longitude = req.body.longitude,
-        radius = req.body.radius || '5000'; // meters => approximately 3 miles
+        radius = req.body.radius || '4800'; // meters => approximately 3 miles
 
     https.get(fsquareReqOpts(latitude, longitude, radius), function(trending) {
       var body = '';

@@ -23,7 +23,12 @@ function getCurrentPosition() {
 function geoSuccess(position) {
 	showLoadingIndicator(true);
 
-	var data = { latitude: position.coords.latitude, longitude: position.coords.longitude, timestamp: new Date().getTime() };
+	var data = { 
+		latitude: position.coords.latitude, 
+		longitude: position.coords.longitude, 
+		timestamp: new Date().getTime() 
+	};
+	
 	localStorage.setItem("position", JSON.stringify(data));
 
 	sendAjaxRequest(data);
@@ -73,9 +78,11 @@ function sendAjaxRequest(data) {
    */
   urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+');
 
-  XHR.addEventListener('load', function(event) {
+  XHR.addEventListener('loadend', function(event) {
   	hideLoadingIndicator();
+  });
 
+  XHR.addEventListener('load', function(event) {
   	var parser = new DOMParser(),
         doc = parser.parseFromString(XHR.responseText, "text/html"),
         responseBody = doc.getElementsByClassName('content')[0];
@@ -89,12 +96,10 @@ function sendAjaxRequest(data) {
 
     parentElem.replaceChild(newContainer, oldContainer);
 
-    changeRadius();
+    setFilterEventListeners();
   });
 
   XHR.addEventListener('error', function(event) {
-  	hideLoadingIndicator();
-
   	var content = document.getElementsByClassName("content")[0];
   	content.innerHTML = "Error occurred sending coordinates to server."
   });
@@ -107,7 +112,7 @@ function sendAjaxRequest(data) {
   XHR.send(urlEncodedData);
 }
 
-function changeRadius() {
+function setFilterEventListeners() {
 	var radiusElems = document.querySelectorAll(".radius");
 
 	for (var i = 0; i < radiusElems.length; i++) {
@@ -116,10 +121,14 @@ function changeRadius() {
 		radiusElems[i].addEventListener("click", function(ev) {
 			ev.preventDefault();
 
-			console.log(this.dataset.meters);
-
 			var data = JSON.parse(localStorage.getItem("position"));
 			data.radius = this.dataset.meters;
+
+			// TODO: iterate instead
+			document.getElementsByClassName('radius')[0].classList.remove("selected");
+			document.getElementsByClassName('radius')[1].classList.remove("selected");
+			document.getElementsByClassName('radius')[2].classList.remove("selected");
+			this.classList.add("selected");
 
 			sendAjaxRequest(data);
 		});

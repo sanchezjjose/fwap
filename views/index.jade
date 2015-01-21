@@ -19,11 +19,16 @@ block content
       else
         if venues.length > 0
           h2 Found #{venues.length} trending events
+        else
+          h2 There are no events trending at the moment in your area.
 
+        div.radius-filters
+          a(class="radius", data-meters="1600", href="#") 1 mile
+          a(class="radius", data-meters="4800", href="#") 3 miles
+          a(class="radius", data-meters="8000", href="#") 5 miles
+
+        if venues.length > 0
           div
-            a(class="radius", data-meters="1000", href="#") 1 mile
-            a(class="radius", data-meters="3000", href="#") 3 miles
-            a(class="radius", data-meters="5000", href="#") 5 miles
             for venue in venues
               div.venue
                 h3: a(href='#{venue.url}') #{venue.name}
@@ -31,5 +36,4 @@ block content
                  li #[span #{venue.stats.checkinsCount}] total checkins
                  li #[span #{venue.hereNow.count}] are here now
 
-        else
-          h2 There are no events trending at the moment in your area.
+        
