@@ -10,25 +10,6 @@ body {
   margin: 0;
 }
 
-#spinner {
-  height: 80px;
-  left: 62%;
-  margin-left: -150px;
-  margin-top: -150px;
-  position: absolute;
-  top: 75%;
-  width: 90px;
-  z-index: 99;
-}
-
-#spinner.show {
-  display: block;
-}
-
-#spinner.hide {
-  display: none;
-}
-
 #logo {
   color: white;
   text-decoration: none;
@@ -38,14 +19,15 @@ nav {
   background-color: #699B99;
   color: white;
   font-family: "Proxima Nova", "Lucida Grande", Helvetica, Arial, sans-serif;
-  font-size: 40px;
+  font-size: 44px;
+  font-weight: 700;
   margin-left: auto;
   margin-right: auto;
   padding: 20px;
   text-align: center;
 
   @media @viewport-mobile {
-    font-size: 36px;
+    font-size: 40px;
     height: 40px;
     padding: 20px;
   }
@@ -55,10 +37,14 @@ nav {
 	display: none;
   font-family: "Proxima Nova", "Lucida Grande", Helvetica, Arial, sans-serif;
   font-size: 18px;
-  margin: 30px 15px;
+  padding: 5px 200px;
 
   @media @viewport-mobile {
-    margin: 30px 5px;
+    padding: 5px 5px;
+  }
+
+  @media @viewport-tablet {
+    padding: 5px 60px;
   }
 
 	.geolocation {
@@ -105,7 +91,7 @@ nav {
     a {
       color: #34495E;
       font-size: 16px;
-      margin: 0 60px;
+      margin: 0 90px;
       text-decoration: none;
 
       @media @viewport-mobile {
