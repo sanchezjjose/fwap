@@ -23,12 +23,12 @@ function getCurrentPosition() {
 function geoSuccess(position) {
 	showLoadingIndicator(true);
 
-	var data = { 
-		latitude: position.coords.latitude, 
-		longitude: position.coords.longitude, 
-		timestamp: new Date().getTime() 
+	var data = {
+		latitude: position.coords.latitude,
+		longitude: position.coords.longitude,
+		timestamp: new Date().getTime()
 	};
-	
+
 	localStorage.setItem("position", JSON.stringify(data));
 
 	sendAjaxRequest(data);
@@ -104,7 +104,8 @@ function sendAjaxRequest(data) {
   	content.innerHTML = "Error occurred sending coordinates to server."
   });
 
-  /* setup request, add the required HTTP header to handle a form data POST request,
+  /*
+   * Setup request, add the required HTTP header to handle a form data POST request,
    * and finally send data to the server.
    */
   XHR.open('POST', '/');

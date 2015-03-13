@@ -1,10 +1,11 @@
+var config = require('./config.js')();
 
 module.exports = function (latitude, longitude, radius) {
 
   // TODO: hide this
-  var clientId = '***REMOVED***';
-  var clientSecret = '***REMOVED***';
-  var version = '***REMOVED***';
+  var clientId = config.clientId;
+  var clientSecret = config.clientSecret;
+  var version = config.apiVersion;
 
   return {
     host: 'api.foursquare.com',
