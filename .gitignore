@@ -1,6 +1,6 @@
 
 # JS
-config.js
+public/javascripts/config.js
 
 # LESS only
 *.css
