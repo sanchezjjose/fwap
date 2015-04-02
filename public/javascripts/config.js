@@ -1,1 +1,1 @@
-/Users/jsanchez/Google Drive/Development/config/config.js
+/Users/jsanchez/Google Drive/Development/private/whatsgood/config.js
