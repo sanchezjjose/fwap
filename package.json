@@ -14,8 +14,7 @@
     "debug": "~2.0.0",
     "jade": "~1.6.0",
     "less-middleware": "1.0.x",
-    "querystring": "0.2.x",
-    "ubar": "0.0.10"
+    "querystring": "0.2.x"
   },
   "devDependencies": {
     "browserify": "^9.0.3",

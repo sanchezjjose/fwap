@@ -5,9 +5,9 @@ var transform = require('vinyl-transform');
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
 
-var BASE = './public/javascripts/script.js';
-var BASE_MINIFIED = 'script.min.js';
-var DEST_DIR = './public/javascripts/';
+var BASE = './public/js/whatsgood.js';
+var BASE_MINIFIED = 'whatsgood.min.js';
+var DEST_DIR = './public/js/';
 
 
 gulp.task('uglify-js', function() {

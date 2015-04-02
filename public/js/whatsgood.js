@@ -1,8 +1,8 @@
 
 (function() {
 
-  var
-    ubar = require('ubar');
+  // var
+  //   ubar = require('ubar');
 
   function getCurrentPosition() {
     if ("geolocation" in navigator) {
@@ -179,7 +179,6 @@
     // ubar.init();
     showDisclaimer();
   }
-
 
   // Entry point
   init();
