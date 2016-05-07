@@ -19,20 +19,20 @@ router.route('/test')
       "response": {
         "outputSpeech": {
           "type": "PlainText",
-          "text": "Today will provide you a new learning opportunity.  Stick with it and the possibilities will be endless. Can I help you with anything else?"
+          "text": "Your wife, Paula is good. She is the best of all time."
         },
         "card": {
           "type": "Simple",
           "title": "Horoscope",
           "content": "Today will provide you a new learning opportunity.  Stick with it and the possibilities will be endless."
         },
-        "reprompt": {
-          "outputSpeech": {
-            "type": "PlainText",
-            "text": "Can I help you with anything else?"
-          }
-        },
-        "shouldEndSession": false
+        // "reprompt": {
+        //   "outputSpeech": {
+        //     "type": "PlainText",
+        //     "text": "Can I help you with anything else?"
+        //   }
+        // },
+        "shouldEndSession": true
       }
     });
   });
