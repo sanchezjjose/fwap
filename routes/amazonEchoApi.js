@@ -6,7 +6,7 @@ var config = require('../public/js/config.js')();
 var Foursquare = require('../public/js/foursquare.js');
 
 router.route('/test')
-  .get(function(req, res) {
+  .post(function(req, res) {
     res.json({
       "version": "1.0",
       "sessionAttributes": {
