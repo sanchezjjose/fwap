@@ -8,7 +8,7 @@ let config = require('../public/js/config.js')();
 let Foursquare = require('../public/js/foursquare.js');
 
 function getOutputSpeech(startPos, numResults, venues) {
-    let outputSpeech;
+    let outputSpeech = '';
     let endPos = startPos + numResults;
 
     // TODO: use .map and build from a range (ie, 0,4 or 5,9 or 10,14 etc...)
@@ -30,6 +30,26 @@ function printDebug(req, res) {
     console.log('HEADERS');
     console.log(req.headers);
     console.log('=================');
+}
+
+function sendResponse(res, outputSpeech, shouldEndSession) {
+
+    res.json({
+        "version": "1.0",
+        "sessionAttributes": {},
+        "response": {
+            "outputSpeech": {
+                "type": "PlainText",
+                "text": outputSpeech
+            },
+            "card": {
+                "type": "Simple",
+                "title": "What's Good in your Hood.",
+                "content": outputSpeech
+            },
+            "shouldEndSession": shouldEndSession
+        }
+    });
 }
 
 router.route('/alexa').post(function(req, res) {
@@ -90,28 +110,18 @@ router.route('/alexa').post(function(req, res) {
                         outputSpeech = 'Invalid intent. Ending session.'
                     }
                 }
+
+            } else {
+                console.log(`The intent ${intentType} was not recognized.`);
             }
 
-            res.json({
-                "version": "1.0",
-                "sessionAttributes": {},
-                "response": {
-                    "outputSpeech": {
-                        "type": "PlainText",
-                        "text": outputSpeech
-                    },
-                    "card": {
-                        "type": "Simple",
-                        "title": "What's Good in your Hood.",
-                        "content": outputSpeech
-                    },
-                    "shouldEndSession": shouldEndSession
-                }
-            });
+            sendResponse(res, outputSpeech, shouldEndSession);
         });
 
-    }).on('error', function(e) {
-        res.send(e.message);
+    }).on('error', function(err) {
+        console.log(err);
+
+        sendResponse(res, 'Sorry, there was a problem getting what\'s good', shouldEndSession);
     });
 });
 
