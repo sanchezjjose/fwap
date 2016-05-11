@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var alexaApi = require('./routes/alexaApi');
 var app = express();
+var env = app.get('env');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -20,6 +21,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('*', function(req, res, next) {
+
+  // Heroku force HTTPS
+  if(env !== 'development' && req.headers['x-forwarded-proto'] !== 'https') {
+    res.redirect('https://whatsgood.herokuapp.com' + req.url);
+
+  } else {
+    next();
+  }
+});
 
 app.use('/', routes);
 app.use('/api/v1', alexaApi);
@@ -35,7 +47,7 @@ app.use(function(req, res, next) {
 
 // development error handler
 // will print stacktrace
-if (app.get('env') === 'development') {
+if (env === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
