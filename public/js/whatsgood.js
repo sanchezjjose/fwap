@@ -35,12 +35,12 @@
     sendAjaxRequest(data);
   }
 
-  function geoError() {
+  function geoError(err) {
     hideLoadingIndicator();
-    handleError();
+    handleError(err);
   }
 
-  function handleError() {
+  function handleError(error) {
 
     // TODO: When error occurs, show message on the home screen, to allow them to try again.
     var content = document.getElementsByClassName("content")[0];
