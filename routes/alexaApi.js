@@ -2,38 +2,30 @@
 
 let express = require('express');
 let router = express.Router();
-let https = require('https');
+let https = require('https'); // replace this with 'q' or something promise based
 let qs = require('querystring');
+let geocoder = require('geocoder');
+let request = require('request');
+
 let config = require('../public/js/config.js')();
 let Foursquare = require('../public/js/foursquare.js');
+let fourSquareApi = new Foursquare(config);
 
-function getOutputSpeech(startPos, numResults, venues) {
+function getOutputSpeech(startPos, maxResults, venues, place) {
     let outputSpeech = '';
-    let endPos = startPos + numResults;
+    let endPos = startPos + maxResults;
+    let totalNumResults = venues.length < endPos ? venues.length : maxResults;
 
-    // TODO: use .map and build from a range (ie, 0,4 or 5,9 or 10,14 etc...)
+    let venueNames = venues.slice(startPos, totalNumResults).map(venue => {
+        return venue.name;
+    }).join(',');
 
-    for (var i = startPos; i < endPos; i++) {
-        outputSpeech += venues[i].name;
-    
-        if (i < endPos-1) {
-            outputSpeech += ',';
-        }
-    }
+    outputSpeech = `The top ${totalNumResults} things in ${place} are ${venueNames}`;
 
-    return `The top ${numResults} things in your area are ${outputSpeech}`;
-}
-
-function printDebug(req, res) {
-    console.log('BODY');
-    console.log(req.body);
-    console.log('HEADERS');
-    console.log(req.headers);
-    console.log('=================');
+    return outputSpeech;
 }
 
 function sendResponse(res, outputSpeech, shouldEndSession) {
-
     res.json({
         "version": "1.0",
         "sessionAttributes": {},
@@ -52,77 +44,141 @@ function sendResponse(res, outputSpeech, shouldEndSession) {
     });
 }
 
+function getGeolocation(place) {
+    return new Promise(function (resolve, reject) { 
+        geocoder.geocode(place, function (err, data) {
+            if (!err) {
+                if (data.results) {
+                    resolve(data.results[0].geometry.location);
+                } else {
+                    resolve({});
+                }
+            } else {
+                reject('Error occurred looking up geocode');
+            }
+        });
+    });
+}
+
+function getTrendingEvents(geometry, radius) {
+    return new Promise(function (resolve, reject) {
+        // TODO: consider passing a limit here
+        https.get(fourSquareApi.trending(geometry.lat, geometry.lng, radius), function (trending) {
+            let body = '';
+            
+            trending.on('data', function(chunk) {
+                body += chunk.toString();
+            });
+            
+            trending.on('end', function() {
+                let bodyObj = JSON.parse(body);
+                let venues = bodyObj.response.venues; 
+                
+                resolve(venues);
+            });
+        }).on('error', function(err) {
+            console.log(err);
+
+            outputSpeech = 'Sorry, there was a problem getting what\'s good';
+            reject(outputSpeech);
+        });
+    });
+}
+
+function getData(res, place, startPos, maxResults) {
+    return new Promise(function (resolve, reject) {
+        let outputSpeech = '';
+
+        if (place) {
+
+            // TODO: fix error case
+            // TODO: maybe need async waterfall 
+            getGeolocation(place).then(function(geometry) {
+                getTrendingEvents(geometry, '8000').then(function(venues) {
+
+                    if (typeof venues === 'undefined' || venues.length <= 0) {
+                        outputSpeech = 'Sorry, there is nothing good in your area at the moment.'
+        
+                    } else {
+                        outputSpeech = getOutputSpeech(startPos, maxResults, venues, place);
+                    }
+
+                    resolve(outputSpeech);
+                
+                }).catch(function(err) {
+                    console.log(err);
+                    
+                    outputSpeech = 'Sorry, there was a problem getting what\'s good';
+                    resolve(outputSpeech);
+                });
+
+            }).catch(function(err) {
+                console.log(err);
+                
+                outputSpeech = 'Sorry, there was a problem getting what\'s good';
+                resolve(outputSpeech);
+            });
+
+        } else {
+            outputSpeech = 'Please say the name of the city in your request. For example, ask whats good in los angeles.';
+            resolve(outputSpeech);
+        }
+    });
+}
+
 router.route('/alexa').post(function(req, res) {
     let outputSpeech = '';
-    let shouldEndSession = true;
     let intentType = req.body.request.type;
 
-    let fs = new Foursquare(config);
-    let latitude = '40.757481999999996';
-    let longitude = '-73.9307194';
-    let radius = '8000';
-    let numResults = 5;
+    let shouldEndSession = true;
+    let startPos = 0;
+    let maxResults = 5;
 
-    printDebug(req, res);
+    if (intentType === 'LaunchRequest') {
+        getData(res, shouldEndSession, place, startPos, maxResults);
 
-    https.get(fs.trending(latitude, longitude, radius), function(trending) {
-        let body = '';
+    } else if (intentType === 'IntentRequest') {
+        let intentName = req.body.request.intent.name;
+        let slots = req.body.request.intent.slots;
+        let place = slots && slots.City.value;
 
-        trending.on('data', function(chunk) {
-            body += chunk.toString();
-        });
-
-        trending.on('end', function() {
-            let bodyObj = JSON.parse(body);
-            let venues = bodyObj.response.venues;
-            let startPos = 0;
-            let numResults = 5;
-
-            if (typeof venues === 'undefined' || venues.length <= 0) {
-                outputSpeech = 'Sorry, there is nothing good in your area at the moment.'
-          
-            } else if (intentType === 'LaunchRequest') {
-                outputSpeech = getOutputSpeech(startPos, numResults, venues);
-
-            } else if (intentType === 'IntentRequest') {
-                let intentName = req.body.request.intent.name;
-            
-                switch (intentName) {
-                    case 'WhatsGoodIntent': {
-                        outputSpeech = getOutputSpeech(startPos, numResults, venues);
-                        break;
-                    }
-                    case 'AMAZON.StopIntent': {
-                        outputSpeech = 'Stopped. You no longer wish to hear what\'s good';
-                        break;
-                    }
-                    case 'AMAZON.CancelIntent': {
-                        outputSpeech = 'Stopped. You no longer wish to hear what\'s good';
-                        break;
-                    }
-                    case 'AMAZON.HelpIntent': {
-                        outputSpeech = 'You can ask, what\'s good in the hood to hear the top 5 things good in your area. ' + 
-                        'Or, you can ask what\'s really good, to hear the next 5 things good in your area. ' +
-                        'Or, you can ask what\'s really, really good, to hear 5 more things good in your area.'
-                        break;
-                    }
-                    default: {
-                        outputSpeech = 'Invalid intent. Ending session.'
-                    }
-                }
-
-            } else {
-                console.log(`The intent ${intentType} was not recognized.`);
+        switch (intentName) {
+            case 'WhatsGoodIntent': {
+                getData(res, place, startPos, maxResults).then(function(outputSpeech) {
+                    sendResponse(res, outputSpeech, shouldEndSession);
+                });
+                break;
             }
+            case 'WhatsReallyGoodIntent': {
+                outputSpeech = 'Whats really good'; 
+                break;
+            }
+            case 'WhatsReallyReallyGoodIntent': {
+                outputSpeech = 'Whats really, really good';
+                break;
+            }
+            case 'AMAZON.StopIntent': {
+                outputSpeech = 'Stopped. You no longer wish to hear what\'s good';
+                break;
+            }
+            case 'AMAZON.CancelIntent': {
+                outputSpeech = 'Stopped. You no longer wish to hear what\'s good';
+                break;
+            }
+            case 'AMAZON.HelpIntent': {
+                outputSpeech = 'You can ask, what\'s good in the hood to hear the top 5 things good in your area. ' + 
+                'Or, you can ask what\'s really good, to hear the next 5 things good in your area. ' +
+                'Or, you can ask what\'s really, really good, to hear 5 more things good in your area.'
+                break;
+            }
+            default: {
+                outputSpeech = 'Invalid intent. Ending session.'
+            }
+        }
 
-            sendResponse(res, outputSpeech, shouldEndSession);
-        });
-
-    }).on('error', function(err) {
-        console.log(err);
-
-        sendResponse(res, 'Sorry, there was a problem getting what\'s good', shouldEndSession);
-    });
+    } else {
+        console.log(`The intent ${intentType} was not recognized.`);
+    }
 });
 
 module.exports = router;
