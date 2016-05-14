@@ -7,9 +7,10 @@ let qs = require('querystring');
 let geocoder = require('geocoder');
 let request = require('request');
 
+var filters = require('./filters');
 let config = require('../public/js/config.js')();
-let Foursquare = require('../public/js/foursquare.js');
-let fourSquareApi = new Foursquare(config);
+let FoursquareApi = require('./FoursquareApi');
+let foursquareApi = new FoursquareApi(config);
 
 function getOutputSpeech(startPos, maxResults, venues, place) {
     let outputSpeech = '';
@@ -45,7 +46,7 @@ function sendResponse(res, outputSpeech, shouldEndSession) {
 }
 
 function getGeolocation(place) {
-    return new Promise(function (resolve, reject) { 
+    return new Promise(function (resolve, reject) {
         geocoder.geocode(place, function (err, data) {
             if (!err) {
                 if (data.results) {
@@ -63,17 +64,17 @@ function getGeolocation(place) {
 function getTrendingEvents(geometry, radius) {
     return new Promise(function (resolve, reject) {
         // TODO: consider passing a limit here
-        https.get(fourSquareApi.trending(geometry.lat, geometry.lng, radius), function (trending) {
+        https.get(foursquareApi.trending(geometry.lat, geometry.lng, radius), function (trending) {
             let body = '';
-            
+
             trending.on('data', function(chunk) {
                 body += chunk.toString();
             });
-            
+
             trending.on('end', function() {
                 let bodyObj = JSON.parse(body);
-                let venues = bodyObj.response.venues; 
-                
+                let venues = bodyObj.response.venues;
+
                 resolve(venues);
             });
         }).on('error', function(err) {
@@ -92,29 +93,29 @@ function getData(res, place, startPos, maxResults) {
         if (place) {
 
             // TODO: fix error case
-            // TODO: maybe need async waterfall 
+            // TODO: maybe need async waterfall
             getGeolocation(place).then(function(geometry) {
                 getTrendingEvents(geometry, '8000').then(function(venues) {
 
                     if (typeof venues === 'undefined' || venues.length <= 0) {
                         outputSpeech = 'Sorry, there is nothing good in your area at the moment.'
-        
+
                     } else {
                         outputSpeech = getOutputSpeech(startPos, maxResults, venues, place);
                     }
 
                     resolve(outputSpeech);
-                
+
                 }).catch(function(err) {
                     console.log(err);
-                    
+
                     outputSpeech = 'Sorry, there was a problem getting what\'s good';
                     resolve(outputSpeech);
                 });
 
             }).catch(function(err) {
                 console.log(err);
-                
+
                 outputSpeech = 'Sorry, there was a problem getting what\'s good';
                 resolve(outputSpeech);
             });
@@ -150,7 +151,7 @@ router.route('/alexa').post(function(req, res) {
                 break;
             }
             case 'WhatsReallyGoodIntent': {
-                outputSpeech = 'Whats really good'; 
+                outputSpeech = 'Whats really good';
                 break;
             }
             case 'WhatsReallyReallyGoodIntent': {
@@ -166,7 +167,7 @@ router.route('/alexa').post(function(req, res) {
                 break;
             }
             case 'AMAZON.HelpIntent': {
-                outputSpeech = 'You can ask, what\'s good in the hood to hear the top 5 things good in your area. ' + 
+                outputSpeech = 'You can ask, what\'s good in the hood to hear the top 5 things good in your area. ' +
                 'Or, you can ask what\'s really good, to hear the next 5 things good in your area. ' +
                 'Or, you can ask what\'s really, really good, to hear 5 more things good in your area.'
                 break;
