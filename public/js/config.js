@@ -2,8 +2,8 @@
 module.exports = function () {
 
   return {
-    clientId: 'UL502O225CO5JIVO5F1QCKJAKEVQQ1Q0YED1JNVZ53LPXSWM',
-    clientSecret: 'CYGNXMXX4WE34L2DWUWFPLOXUA2UFOI1WB2IOAJODP0XEFJL',
+    clientId: process.env.WG_FOURSQUARE_CLIENT_ID,
+    clientSecret: process.env.WG_FOURSQUARE_CLIENT_SECRET,
     apiVersion: '20141210'
   };
 };
