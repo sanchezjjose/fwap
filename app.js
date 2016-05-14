@@ -4,10 +4,11 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var routes = require('./routes/index');
-var alexaApi = require('./routes/alexaApi');
 var app = express();
 var env = app.get('env');
+
+var webRoutes = require('./routes/index');
+var alexaRoutes = require('./routes/AlexaApi');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -33,8 +34,8 @@ app.get('*', function(req, res, next) {
   }
 });
 
-app.use('/', routes);
-app.use('/api/v1', alexaApi);
+app.use('/', webRoutes);
+app.use('/api/v1', alexaRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

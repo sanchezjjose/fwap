@@ -40,10 +40,14 @@ WhatsGood.prototype.getTrendingEvents = function (geometry, radius) {
             });
 
             trending.on('end', function() {
-                let bodyObj = JSON.parse(body);
-                let venues = bodyObj.response.venues;
+                let response = JSON.parse(body).response;
+                let filteredVenues = response.venues.filter(venue => {
+                    return filters.excludedCategories.indexOf(venue.categories[0].name) === -1;
+                });
 
-                resolve(venues);
+                response.venues = filteredVenues;
+
+                resolve(response);
             });
 
         }).on('error', function(err) {
@@ -53,4 +57,4 @@ WhatsGood.prototype.getTrendingEvents = function (geometry, radius) {
     });
 }
 
-module.exports = Foursquare;
+module.exports = WhatsGood;

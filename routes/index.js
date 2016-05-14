@@ -2,7 +2,6 @@
 
 let express = require('express');
 let router = express.Router();
-let https = require('https');
 
 let WhatsGoodApi = require('./WhatsGoodApi');
 let whatsGoodApi = new WhatsGoodApi();
@@ -14,47 +13,30 @@ router.route('/')
     })
 
     .post(function(req, res) {
-
-        let geomatry = {
+        let radius = req.body.radius || '4800'; // meters => approximately 3 miles
+        let geometry = {
             lat : req.body.latitude,
             lng : req.body.longitude
         };
 
-        let radius = req.body.radius || '4800'; // meters => approximately 3 miles
+        whatsGoodApi.getTrendingEvents(geometry, radius).then(function(response) {
 
-        https.get(fs.trending(latitude, longitude, radius), function(trending) {
-            var body = '';
+            res.format({
+                'text/html': function() {
+                    res.render('index', response);
+                },
 
-            trending.on('data', function(chunk) {
-                body += chunk.toString();
+                'application/json': function() {
+                    res.send(response);
+                },
+
+                'default': function() {
+                    res.status(406).send('Not Acceptable');
+                }
             });
 
-            trending.on('end', function() {
-                let response = JSON.parse(body).response;
-                let filteredVenues = response.venues.filter(venue => {
-                    return filters.excludedCategories.indexOf(venue.categories[0].name) === -1;
-                });
-
-                response.venues = filteredVenues;
-
-                res.format({
-                    'text/html': function() {
-                        res.render('index', response);
-                    },
-
-                    'application/json': function() {
-                        res.send(body);
-                    },
-
-                    'default': function() {
-                        // log the request and respond with 406
-                        res.status(406).send('Not Acceptable');
-                    }
-                });
-            });
-
-        }).on('error', function(e) {
-            res.send(e.message);
+        }).catch(function(err) {
+            res.send(err.message);
         });
     })
 
