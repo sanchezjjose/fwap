@@ -10,7 +10,7 @@ let app = express();
 let env = app.get('env');
 
 let webRoutes = require('./routes/index');
-let alexaRoutes = require('./routes/AlexaApi');
+let alexaRoutes = require('./routes/alexa');
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
