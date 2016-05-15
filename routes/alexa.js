@@ -14,7 +14,7 @@ router.route('/alexa').post(function(req, res) {
     let maxResults = 5;
 
     if (intentType === 'LaunchRequest') {
-        alexaApi.getData(res, shouldEndSession, place, startPos, maxResults).then(function(outputSpeech) {
+        alexaApi.getData(res, null, startPos, maxResults).then(function(outputSpeech) {
             alexaApi.sendResponse(res, outputSpeech, shouldEndSession);
 
         }).catch(function(err) {
