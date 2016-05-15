@@ -3,7 +3,7 @@
 let express = require('express');
 let router = express.Router();
 
-let WhatsGoodApi = require('./WhatsGoodApi');
+let WhatsGoodApi = require('../clients/WhatsGoodApi');
 let whatsGoodApi = new WhatsGoodApi();
 
 router.route('/')

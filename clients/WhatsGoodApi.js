@@ -3,7 +3,7 @@
 let https = require('https');
 let request = require('request'); // TODO: replace https above with request
 let geocoder = require('geocoder');
-let filters = require('./filters');
+let filters = require('../helpers/filters');
 let FoursquareApi = require('./FoursquareApi');
 let foursquareApi = new FoursquareApi();
 

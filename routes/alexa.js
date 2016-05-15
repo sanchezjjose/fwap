@@ -2,7 +2,7 @@
 
 let express = require('express');
 let router = express.Router();
-let AlexaApi = require('./AlexaApi');
+let AlexaApi = require('../clients/AlexaApi');
 let alexaApi = new AlexaApi();
 
 router.route('/alexa').post(function(req, res) {
