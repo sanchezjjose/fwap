@@ -6,6 +6,7 @@ let favicon = require('serve-favicon');
 let logger = require('morgan');
 let cookieParser = require('cookie-parser');
 let bodyParser = require('body-parser');
+let handlebars = require('express-handlebars');
 let app = express();
 let env = app.get('env');
 
@@ -13,7 +14,31 @@ let webRoutes = require('./routes/index');
 let alexaRoutes = require('./routes/alexa');
 
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.engine('.html', handlebars({
+  defaultLayout: 'layout',
+  extname: '.html',
+  helpers: {
+    // TODO: move this to separate middleware
+    'equals': function (one, two, options) {
+      if (one === two) {
+        return options.fn(this);
+      }
+      return options.inverse(this);
+    },
+    'contains': function (elem, list, options) {
+      if (list.indexOf(elem) > -1) {
+        return options.fn(this);
+      }
+      return options.inverse(this);
+    },
+    'section': function(name, options) {
+      if (!this._sections) this._sections = {};
+      this._sections[name] = options.fn(this);
+      return null;
+    }
+  }
+}));
+app.set('view engine', '.html');
 
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));

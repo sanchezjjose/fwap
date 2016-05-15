@@ -1,0 +1,52 @@
+<div class='container'>
+    <div class='content'>
+
+        {{#unless venues}}
+            <h2>Trending Events Near You.</h2>
+
+            <div class='disclaimer'>
+                <p>
+                    Want to go out and do something, but not sure what or where to go?
+                    Check out what's good in your area for some inspiration!
+                    We are your guide to what's trending near you,
+                    based on your location and where people are.
+                </p>
+
+                <div class='geolocation'>
+                    <a href=''></a>
+                </div>
+            </div>
+
+        {{else}}
+
+            {{#if venues.length}}
+                <h2>Found {{venues.length}} trending events</h2>
+            {{else}}
+                <h2>There are no events trending at the moment in your area.</h2>
+            {{/if}}
+
+            <div class='radius-filters'>
+                <a class='radius' data-meters='1600' href='#'>1 mile</a>
+                <a class='radius' data-meters='4800' href='#'>3 mile</a>
+                <a class='radius' data-meters='8000' href='#'>5 mile</a>
+            </div>
+
+            {{#if venues.length}}
+                <div>
+                    {{#each venues}}
+                        <div class='venue'>
+                            <h3>
+                                <a href='{{url}}'>{{name}}</a>
+                            </h3>
+                            <ul>
+                               <li><span>{{stats.checkinsCount}}</span> total checkins</li>
+                               <li><span>{{hereNow.count}}</span> are here now</li>
+                            </ul>
+                        </div>
+                    {{/each}}
+                </div>
+            {{/if}}
+        {{/unless}}
+
+    </div>
+</div>
