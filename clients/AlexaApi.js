@@ -5,7 +5,9 @@ let whatsGoodApi = new WhatsGoodApi();
 
 let AlexaApi = function AlexaApi() {};
 
-AlexaApi.prototype.getData = function (res, place, startPos, maxResults, intentName) {
+const RADIUS = 8000; // meters
+
+AlexaApi.prototype.getData = function (res, place, intentName) {
     let self = this;
 
     return new Promise((resolve, reject) => {
@@ -13,14 +15,14 @@ AlexaApi.prototype.getData = function (res, place, startPos, maxResults, intentN
 
         if (place) {
             whatsGoodApi.getGeolocation(place).then((geometry) => {
-                whatsGoodApi.getTrendingEvents(geometry, '8000').then((response) => {
+                whatsGoodApi.getTrendingEvents(geometry, RADIUS).then((response) => {
                     let venues = response.venues;
 
                     if (typeof venues === 'undefined' || venues.length <= 0) {
                         outputSpeech = 'Sorry, there is nothing good in your area at the moment.'
 
                     } else {
-                        outputSpeech = self.getOutputSpeech(startPos, maxResults, venues, place, intentName);
+                        outputSpeech = self.getOutputSpeech(venues, place, intentName);
                     }
 
                     resolve(outputSpeech);
@@ -34,25 +36,39 @@ AlexaApi.prototype.getData = function (res, place, startPos, maxResults, intentN
     });
 }
 
-AlexaApi.prototype.getOutputSpeech = function (startPos, maxResults, venues, place, intentName) {
-    let outputSpeech = '';
+AlexaApi.prototype.getVenueNames = function (startPos, maxResults, venues) {
     let endPos = startPos + maxResults;
-    let totalNumResults = venues.length < endPos ? venues.length : maxResults;
+    let totalNumResults = venues.length < endPos ? venues.length : endPos;
     let venueNames = venues.slice(startPos, totalNumResults).map(venue => {
         return venue.name;
     }).join(',');
 
+    return venueNames;
+}
+
+AlexaApi.prototype.getOutputSpeech = function (venues, place, intentName) {
+    let outputSpeech = '';
+
     switch (intentName) {
         case 'WhatsGoodIntent': {
-            outputSpeech = `The top ${totalNumResults} things in ${place} are ${venueNames}`
+            let venueNames = this.getVenueNames(0, 5, venues); 
+            outputSpeech = venueNames ? 
+                `Heres whats good in ${place}. ${venueNames}` :
+                `Sorry, nothing good was found in ${place} at this time`;
             break;
         }
         case 'WhatsReallyGoodIntent': {
-            outputSpeech = 'Whats really good';
+            let venueNames = this.getVenueNames(4, 5, venues); 
+            outputSpeech = venueNames ? 
+                `Heres whats really good in ${place}. ${venueNames}` :
+                `Sorry, nothing really good was found in ${place} at this time`;
             break;
         }
         case 'WhatsReallyReallyGoodIntent': {
-            outputSpeech = 'Whats really, really good';
+            let venueNames = this.getVenueNames(9, 5, venues); 
+            outputSpeech = venueNames ? 
+                `Heres whats really, really good in ${place}. ${venueNames}` :
+                `Sorry, nothing really, really good was found in ${place} at this time`;
             break;
         }
         case 'AMAZON.StopIntent': {
@@ -73,7 +89,7 @@ AlexaApi.prototype.getOutputSpeech = function (startPos, maxResults, venues, pla
             outputSpeech = 'Invalid intent. Ending session.'
         }
     }
-
+    
     return outputSpeech;
 }
 
