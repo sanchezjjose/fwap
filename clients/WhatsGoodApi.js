@@ -1,7 +1,6 @@
 'use strict';
 
-let https = require('https');
-let request = require('request'); // TODO: replace https above with request
+let request = require('request'); 
 let geocoder = require('geocoder');
 let filters = require('../helpers/filters');
 let FoursquareApi = require('./FoursquareApi');
@@ -26,32 +25,27 @@ WhatsGood.prototype.getGeolocation = function (place) {
     });
 }
 
+// TODO: move this FoursquareApi
 WhatsGood.prototype.getTrendingEvents = function (geometry, radius) {
 
     return new Promise(function (resolve, reject) {
 
         // TODO: consider passing a limit here
-        https.get(foursquareApi.trending(geometry.lat, geometry.lng, radius), function (trending) {
-            let body = '';
-
-            trending.on('data', function(chunk) {
-                body += chunk.toString();
-            });
-
-            trending.on('end', function() {
+        request(foursquareApi.trending(geometry.lat, geometry.lng, radius), function (error, response, body) {
+            
+            if (!error && response.statusCode === 200) {
                 let response = JSON.parse(body).response;
                 let filteredVenues = response.venues.filter(venue => {
                     return filters.excludedCategories.indexOf(venue.categories[0].name) === -1;
                 });
 
                 response.venues = filteredVenues;
-
                 resolve(response);
-            });
 
-        }).on('error', function(err) {
-            // TODO: correct usage for handling error in a Promise?
-            reject(err);
+            } else {
+                reject(err);
+            }
+
         });
     });
 }

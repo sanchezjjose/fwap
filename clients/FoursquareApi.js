@@ -9,11 +9,8 @@ let Foursquare = function () {
 Foursquare.prototype.trending = function (latitude, longitude, radius) {
 
     return {
-        host: 'api.foursquare.com',
-        port: 443,
-        path: '/v2/venues/trending?ll=' + latitude + ',' + longitude + '&radius=' + radius + '&client_id=' + this.clientId + '&client_secret=' + this.clientSecret + '&v=' + this.apiVersion,
-        method: 'GET',
-        headers: { 'Transfer-Encoding' :'chunked' }
+        url: `https://api.foursquare.com/v2/venues/trending?ll=${latitude},${longitude}&radius=${radius}&client_id=${this.clientId}&client_secret=${this.clientSecret}&v=${this.apiVersion}`,
+        headers: { }
     };
 };
 
